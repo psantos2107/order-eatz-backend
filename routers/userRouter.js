@@ -9,10 +9,10 @@ router.post("/", userCtrl.createUser);
 router.patch("/:id", userCtrl.updateUser);
 
 //show route
-router.patch("/:id", userCtrl.showUser);
+router.get("/:id", userCtrl.showUser);
 
 //delete route
-router.patch("/:id", userCtrl.deleteUser);
+router.delete("/:id", userCtrl.deleteUser);
 
 module.exports = router;
 
