@@ -16,9 +16,11 @@ db.on("error", function (error) {
   console.error("Connection error:", error);
 });
 
-module.exports = {
-  Food: require("./food"),
-  Order: require("./order"),
-  Review: require("./review"),
-  User: require("./user"),
-};
+
+  module.exports = {
+    FoodDrink: require("./food"),
+    Order: require("./order"),
+    Review: require("./review"),
+    User: require("./user"),
+  };
+  
