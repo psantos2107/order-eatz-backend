@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const userCtrl = require("./../controllers/userCtrl");
+const userCtrl = require("../controllers/userCtrl");
+const upload = require("../middleware/multerConfig");
+const authenticate = require("../middleware/authenticate"); // The path to where you save this middleware file
 
-//post route
-router.post("/", userCtrl.createUser);
+// Update route to modify user details
+router.patch("/:id", authenticate, userCtrl.updateUser);
 
-//update route
-router.patch("/:id", userCtrl.updateUser);
+// Get route to show user details
+router.get("/:id", authenticate, userCtrl.getUser);
 
-//show route
-router.get("/:id", userCtrl.showUser);
+// Delete route to remove a user
+router.delete("/:id", authenticate, userCtrl.deleteUser);
 
-//delete route
-router.delete("/:id", userCtrl.deleteUser);
+// Patch route to upload or update a profile picture
+router.patch('/profilePhoto', authenticate, upload.single('photo'), userCtrl.updateProfilePhoto);
 
 module.exports = router;
 
