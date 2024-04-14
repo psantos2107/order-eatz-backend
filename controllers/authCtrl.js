@@ -4,10 +4,20 @@ const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
   const { username, password, name, lastName, photo } = req.body;
-  const newUser = new User({ username, password, name, lastName, photo });
-  await newUser.save();
-  const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.status(201).json({ userId: newUser._id, token });
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ message: "Username already taken" });
+    }
+
+    const newUser = new User({ username, password, name, lastName, photo });
+    await newUser.save();
+
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ userId: newUser._id, token });
+  } catch (error) {
+    res.status(500).json({ message: "Error registering user", error: error.message });
+  }
 };
 
 const login = async (req, res) => {
@@ -20,6 +30,8 @@ const login = async (req, res) => {
   const userResponse = { ...user.toObject(), password: undefined };
   res.json({ user: userResponse, token });
 };
+
+
 
 module.exports = {
   register,
