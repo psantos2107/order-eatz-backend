@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 //CRUD ROUTES
-app.use("/api/login", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
