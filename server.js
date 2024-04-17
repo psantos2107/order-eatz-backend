@@ -22,7 +22,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 
 app.listen(port, () => {
   console.log(`Listening for order-eatz on port ${port}`);
