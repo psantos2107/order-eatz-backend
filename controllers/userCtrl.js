@@ -3,7 +3,7 @@ const User = require("../models/user");
 const getUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).select('-password'); 
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
     }
@@ -13,11 +13,16 @@ const getUser = async (req, res) => {
   }
 };
 
+
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
+
+  
+  delete updates.password; 
+
   try {
-    const user = await User.findByIdAndUpdate(id, updates, { new: true });
+    const user = await User.findByIdAndUpdate(id, updates, { new: true }).select('-password'); 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -26,6 +31,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const deleteUser = async (req, res) => {
   const { id } = req.params;
