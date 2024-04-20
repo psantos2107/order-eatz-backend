@@ -1,19 +1,19 @@
 const User = require("../models/user");
 
+// Get a single user by ID
 const getUser = async (req, res) => {
-  const { id } = req.params;
   try {
-    const user = await User.findById(id).select('-password'); 
+    const user = await User.findById(req.params.id).select('-password');
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json(user);
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-
+// Update user details
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
@@ -21,30 +21,30 @@ const updateUser = async (req, res) => {
   delete updates.password; 
 
   try {
-    const user = await User.findByIdAndUpdate(id, updates, { new: true }).select('-password'); 
+    const user = await User.findByIdAndUpdate(id, updates, { new: true, select: '-password' });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json(user);
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-
+// Delete a user
 const deleteUser = async (req, res) => {
-  const { id } = req.params;
   try {
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
+// Update the profile photo
 const updateProfilePhoto = async (req, res) => {
   const { id } = req.params;
   if (!req.file) {
