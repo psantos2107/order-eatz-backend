@@ -3,7 +3,7 @@ const Review = require("./../models/review");
 const createReview = async (req, res) => {
   try {
     const reviewObj = { ...req.body };
-    reviewObj.createdBy = reviewObj.user._id;
+    reviewObj.createdBy = req.user.userId;
     delete reviewObj.user;
     const newReview = new Review(reviewObj);
     await newReview.save();
@@ -46,7 +46,9 @@ const getReviewsOfUser = async (req, res) => {
 
 const getSingleReview = async (req, res) => {
   try {
-    const review = await Review.findById(req.params.id);
+    const review = await Review.findById(req.params.id)
+      .populate("createdBy")
+      .exec();
     if (!review) {
       throw new Error("No review was able to be found.");
     } else {
@@ -67,7 +69,7 @@ const updateReview = async (req, res) => {
     if (!updatedReview) {
       throw new Error("No review was able to be found.");
     } else {
-      res.status(200).json({ updatedReview });
+      res.status(200).json({ message: "Review updated successfully." });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -80,7 +82,7 @@ const deleteReview = async (req, res) => {
     if (!review) {
       throw new Error("No review was able to be found.");
     } else {
-      res.status(200).json({ review });
+      res.status(200).json({ message: "Review deleted successfully." });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -95,3 +97,37 @@ module.exports = {
   updateReview,
   deleteReview,
 };
+
+/* 
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const reviewSchema = new Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    content: { type: String, required: true, trim: true },
+    rating: {
+      type: Number,
+      required: true,
+      min: [1, "Rating cannot be below a 1"],
+      max: [5, "Rating cannot be above a 5"],
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    foodItem: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FoodDrink",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Review", reviewSchema);
+
+*/

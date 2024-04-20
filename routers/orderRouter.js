@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const orderCtrl = require("./../controllers/orderCtrl");
+const authenticate = require('./../middleware/authenticate')
 
 //create an order
-router.post("/", orderCtrl.createOrder);
+router.post("/", authenticate, orderCtrl.createOrder);
 
 //get all the orders of a single user
 router.get("/user/:id", orderCtrl.getUserOrders);
