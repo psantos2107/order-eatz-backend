@@ -5,7 +5,7 @@ const upload = require("../middleware/multerConfig");
 const authenticate = require("../middleware/authenticate"); // The path to where you save this middleware file
 
 
-
+// update
 router.patch("/profile/update", authenticate, userCtrl.updateUser);
 
 
