@@ -4,6 +4,12 @@ const userCtrl = require("../controllers/userCtrl");
 const upload = require("../middleware/multerConfig");
 const authenticate = require("../middleware/authenticate"); // The path to where you save this middleware file
 
+
+
+router.patch("/profile/update", authenticate, userCtrl.updateUser);
+
+
+
 // Update route to modify user details
 router.patch("/:id", authenticate, userCtrl.updateUser);
 
