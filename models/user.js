@@ -30,7 +30,14 @@ const userSchema = new mongoose.Schema({
   },
   photo: {
     type: String
-  }
+  },
+  bio: { // New field for bio
+    type: String,
+    default: ''
+  },
+  foodInterests: [{ // New field for food interests, stored as an array of strings
+    type: String
+  }]
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
