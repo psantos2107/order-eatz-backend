@@ -3,17 +3,17 @@ const router = express.Router();
 const reviewCtrl = require("./../controllers/reviewCtrl");
 const authenticate = require("./../middleware/authenticate");
 
-router.post("/", authenticate, reviewCtrl.createReview);
+router.post("/", reviewCtrl.createReview);
 
-router.get("/food/:id", authenticate, reviewCtrl.getReviewsOfFood);
+router.get("/food/:id", reviewCtrl.getReviewsOfFood);
 
-router.get("/user/:id", authenticate, reviewCtrl.getReviewsOfUser);
+router.get("/user/:id", reviewCtrl.getReviewsOfUser);
 
-router.get("/:id", authenticate, reviewCtrl.getSingleReview);
+router.get("/:id", reviewCtrl.getSingleReview);
 
-router.patch("/:id", authenticate, reviewCtrl.updateReview);
+router.patch("/:id", reviewCtrl.updateReview);
 
-router.delete("/:id", authenticate, reviewCtrl.deleteReview);
+router.delete("/:id", reviewCtrl.deleteReview);
 
 module.exports = router;
 

@@ -3,7 +3,8 @@ const Review = require("./../models/review");
 const createReview = async (req, res) => {
   try {
     const reviewObj = { ...req.body };
-    reviewObj.createdBy = req.user.userId;
+    // reviewObj.createdBy = req.user.userId;
+    reviewObj.createdBy = "661db0c3b89cd9ddc465476b";
     delete reviewObj.user;
     const newReview = new Review(reviewObj);
     await newReview.save();
@@ -24,7 +25,7 @@ const getReviewsOfFood = async (req, res) => {
     })
       .populate("createdBy")
       .exec();
-    res.status(200).json({ reviews: foodDrinkReviews });
+    res.status(200).json(foodDrinkReviews);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
