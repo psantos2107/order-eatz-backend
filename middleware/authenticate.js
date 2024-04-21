@@ -1,22 +1,25 @@
 const jwt = require("jsonwebtoken");
 
 const authenticate = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(403).json({ message: "Authorization header is missing" });
+  }
 
+  const token = authHeader.split(" ")[1];
   if (!token) {
-    return res
-      .status(403)
-      .json({ message: "A token is required for authentication" });
+    console.log("No token found in the authorization header:", authHeader);
+    return res.status(403).json({ message: "A token is required for authentication" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
+    next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid Token" });
+    console.error("Token verification failed:", err);
+    return res.status(401).json({ message: "Invalid Token", error: err.message });
   }
-
-  return next();
 };
 
 module.exports = authenticate;
