@@ -8,7 +8,9 @@ const createReview = async (req, res) => {
     delete reviewObj.user;
     const newReview = new Review(reviewObj);
     await newReview.save();
-    res.status(201).json(newReview);
+    res
+      .status(201)
+      .json({ newReview, message: "Successfully posted your review!" });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res.status(422).json({ message: error.message });
@@ -24,6 +26,7 @@ const getReviewsOfFood = async (req, res) => {
       foodItem: foodDrinkID,
     })
       .populate("createdBy")
+      .sort({ createdAt: -1 })
       .exec();
     res.status(200).json(foodDrinkReviews);
   } catch (error) {
