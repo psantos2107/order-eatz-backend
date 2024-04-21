@@ -1,37 +1,51 @@
 const User = require("../models/user");
 
-// Get a single user by ID
-const getUser = async (req, res) => {
+// Get a single user profile
+const getUserProfile = async (req, res) => {
+  const userId = req.user.userId; 
+
+  if (!userId) {
+    console.error("No user ID provided in the request");
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(userId).select('-password');
     if (!user) {
+      console.error(`User not found with ID: ${userId}`);
       return res.status(404).json({ message: "User not found" });
     }
     res.json(user);
   } catch (error) {
+    console.error("Error fetching user data:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Update user details
-const updateUser = async (req, res) => {
-  const { id } = req.params;
+const updateUserProfile = async (req, res) => {
+  const userId = req.user.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID missing from request" });
+  }
+
   const updates = req.body;
-
-  delete updates.password; 
+  delete updates.password;
 
   try {
-    const user = await User.findByIdAndUpdate(id, updates, { new: true, select: '-password' });
+    const user = await User.findByIdAndUpdate(userId, updates, {
+      new: true,
+      select: '-password'
+    });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Profile not found" });
     }
-    res.json(user);
+    res.json({ message: "Profile updated successfully", user });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Delete a user
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -44,7 +58,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Update the profile photo
 const updateProfilePhoto = async (req, res) => {
   const { id } = req.params;
   if (!req.file) {
@@ -56,10 +69,7 @@ const updateProfilePhoto = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Assuming you want to store the path of the uploaded file
     user.photo = req.file.path;
-
     await user.save();
     res.status(200).json({
       message: "Profile photo updated successfully",
@@ -74,11 +84,12 @@ const updateProfilePhoto = async (req, res) => {
 };
 
 module.exports = {
-  getUser,
-  updateUser,
+  getUserProfile,
+  updateUserProfile,
   deleteUser,
   updateProfilePhoto,
 };
+
 
 //NOTES:
 /*
