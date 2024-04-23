@@ -60,9 +60,11 @@ const updateOrderAddItem = async (req, res) => {
   try {
     const update = await Order.findByIdAndUpdate(
       req.params.id,
-      { $push: { orders: req.body.orderId } },
-      { new: true }
-    );
+      { $push: { orders: req.body.foodId } },
+      { new: true, runValidators: true }
+    )
+      .populate("orders")
+      .populate("user");
     res.status(201).json(update);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -73,9 +75,11 @@ const updateOrderDeleteItem = async (req, res) => {
   try {
     const update = await Order.findByIdAndUpdate(
       req.params.id,
-      { $pull: { orders: req.body.orderId } },
-      { new: true }
-    );
+      { $pull: { orders: req.body.foodId } },
+      { new: true, runValidators: true }
+    )
+      .populate("orders")
+      .populate("user");
     if (!update) {
       return res.status(404).json({ message: "Order not found" });
     }

@@ -15,6 +15,12 @@ router.delete("/:id", orderCtrl.deleteOrder);
 //show an order
 router.get("/:id", orderCtrl.showOrder);
 
+//add item to orders array
+router.patch("/:id/addItem", orderCtrl.updateOrderAddItem);
+
+//delete item from orders array
+router.patch("/:id/removeItem", orderCtrl.updateOrderDeleteItem);
+
 //update an order
 router.patch("/:id", orderCtrl.updateOrder);
 
