@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  totalPrice: { type: Number, required: true },
+  totalPrice: { type: Number, default: 0 },
   isSubmitted: { type: Boolean, default: false },
   user: {
     type: mongoose.Schema.Types.ObjectId,
