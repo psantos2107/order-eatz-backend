@@ -2,7 +2,7 @@ const User = require("../models/user");
 
 // Get a single user profile
 const getUserProfile = async (req, res) => {
-  const userId = req.user.userId; 
+  const userId = req.params.id || (req.user ? req.user.userId : null)
 
   if (!userId) {
     console.error("No user ID provided in the request");

@@ -3,17 +3,23 @@ const router = express.Router();
 const reviewCtrl = require("./../controllers/reviewCtrl");
 const authenticate = require("./../middleware/authenticate");
 
-router.post("/", reviewCtrl.createReview);
+// POST a review - should be private to ensure only authenticated users can post reviews
+router.post("/", authenticate, reviewCtrl.createReview);
 
+// GET reviews of a particular food - public
 router.get("/food/:id", reviewCtrl.getReviewsOfFood);
 
+// GET reviews by a user - public
 router.get("/user/:id", reviewCtrl.getReviewsOfUser);
 
+// GET a single review - public
 router.get("/:id", reviewCtrl.getSingleReview);
 
-router.patch("/:id", reviewCtrl.updateReview);
+// PATCH a review - should be private to ensure only the user who created it can update it
+router.patch("/:id", authenticate, reviewCtrl.updateReview);
 
-router.delete("/:id", reviewCtrl.deleteReview);
+// DELETE a review - should be private to ensure only the user who created it can delete it
+router.delete("/:id", authenticate, reviewCtrl.deleteReview);
 
 module.exports = router;
 
