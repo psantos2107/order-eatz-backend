@@ -4,10 +4,11 @@ const orderCtrl = require("./../controllers/orderCtrl");
 const authenticate = require("./../middleware/authenticate");
 
 //create an order
-router.post("/", orderCtrl.createOrder);
+router.post("/", authenticate, orderCtrl.createOrder);
 
 //get all the orders of a single user
-router.get("/user/:id", orderCtrl.getUserOrders);
+//this is changed from before, which took a user ID
+router.get("/user", authenticate, orderCtrl.getUserOrders);
 
 //delete an order
 router.delete("/:id", orderCtrl.deleteOrder);

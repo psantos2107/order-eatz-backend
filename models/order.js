@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    //no longer made user required, in order to acct for guests checking out.
   },
   createdAt: { type: Date, default: Date.now },
 });

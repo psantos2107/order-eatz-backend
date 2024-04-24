@@ -3,8 +3,9 @@ const Order = require("./../models/order");
 const createOrder = async (req, res) => {
   try {
     const orderObj = { ...req.body };
-    // orderObj.user = req.user.userId;
-    orderObj.user = "661db0c3b89cd9ddc465476b"; //placeholder until auth is set up.
+    if (req.user) {
+      orderObj.user = req.user.userId;
+    }
     const newOrder = new Order(orderObj);
     await newOrder.save();
     res.status(201).json(newOrder);
@@ -15,7 +16,8 @@ const createOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
   try {
-    const userOrders = await Order.find({ user: req.params.id })
+    //changed req.params.id into req.user.userId
+    const userOrders = await Order.find({ user: req.user.userId })
       .populate("orders")
       .populate("user");
     res.status(201).json(userOrders);
