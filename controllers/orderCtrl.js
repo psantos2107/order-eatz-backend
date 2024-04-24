@@ -1,4 +1,6 @@
 const Order = require("./../models/order");
+const FoodDrink = require("./../models/food");
+const getTotalPrice = require("./../models/getTotalOrderPrice");
 
 const createOrder = async (req, res) => {
   try {
@@ -60,9 +62,12 @@ const updateOrder = async (req, res) => {
 //added specific functions to add items into the order array and to delete items from the order array
 const updateOrderAddItem = async (req, res) => {
   try {
+    const order = await Order.findById(req.params.id);
+    const foodDrinkItem = await FoodDrink.findById(req.body.foodId);
+    const newPrice = order.totalPrice + foodDrinkItem.price;
     const update = await Order.findByIdAndUpdate(
       req.params.id,
-      { $push: { orders: req.body.foodId } },
+      { $push: { orders: req.body.foodId }, $set: { totalPrice: newPrice } },
       { new: true, runValidators: true }
     )
       .populate("orders")
@@ -75,9 +80,13 @@ const updateOrderAddItem = async (req, res) => {
 
 const updateOrderDeleteItem = async (req, res) => {
   try {
+    const order = await Order.findById(req.params.id);
+    const foodDrinkItem = await FoodDrink.findById(req.body.foodId);
+    const newPrice =
+      order.totalPrice > 0 ? order.totalPrice - foodDrinkItem.price : 0;
     const update = await Order.findByIdAndUpdate(
       req.params.id,
-      { $pull: { orders: req.body.foodId } },
+      { $pull: { orders: req.body.foodId }, $set: { totalPrice: newPrice } },
       { new: true, runValidators: true }
     )
       .populate("orders")
