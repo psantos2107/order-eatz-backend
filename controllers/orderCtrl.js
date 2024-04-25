@@ -1,6 +1,5 @@
 const Order = require("./../models/order");
 const FoodDrink = require("./../models/food");
-const getTotalPrice = require("./../models/getTotalOrderPrice");
 
 const createOrder = async (req, res) => {
   try {

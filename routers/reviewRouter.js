@@ -21,13 +21,7 @@ router.patch("/:id", authenticate, reviewCtrl.updateReview);
 // DELETE a review - should be private to ensure only the user who created it can delete it
 router.delete("/:id", authenticate, reviewCtrl.deleteReview);
 
-module.exports = router;
+//route to get all positive food reviews
+router.get("/positive", reviewCtrl.getPositiveFoodReviews);
 
-/* 
-//CRUD ROUTES
-app.use("/api/login", authRouter);
-app.use("/api/food", foodRouter);
-app.use("/api/orders", orderRouter);
-app.use("/api/reviews", reviewRouter);
-app.use("/api/user", userRouter);
-*/
+module.exports = router;

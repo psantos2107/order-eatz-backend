@@ -18,6 +18,17 @@ const createReview = async (req, res) => {
   }
 };
 
+const getPositiveFoodReviews = async (req, res) => {
+  try {
+    const positiveReviews = await Review.find({ rating: { $gte: 4 } })
+      .populate("createdBy")
+      .exec();
+    res.status(200).json(positiveReviews);
+  } catch (error) {
+    res.status(400).json({ status: "fail", message: error.message });
+  }
+};
+
 const getReviewsOfFood = async (req, res) => {
   try {
     const foodDrinkID = req.params.id;
@@ -99,6 +110,7 @@ module.exports = {
   getSingleReview,
   updateReview,
   deleteReview,
+  getPositiveFoodReviews,
 };
 
 /* 
