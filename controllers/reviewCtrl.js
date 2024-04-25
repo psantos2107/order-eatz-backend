@@ -3,8 +3,7 @@ const Review = require("./../models/review");
 const createReview = async (req, res) => {
   try {
     const reviewObj = { ...req.body };
-    // reviewObj.createdBy = req.user.userId;
-    reviewObj.createdBy = "661db0c3b89cd9ddc465476b";
+    reviewObj.createdBy = req.user.userId;
     delete reviewObj.user;
     const newReview = new Review(reviewObj);
     await newReview.save();
