@@ -63,7 +63,7 @@ const updateOrderAddItem = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     const foodDrinkItem = await FoodDrink.findById(req.body.foodId);
-    const newPrice = order.totalPrice + foodDrinkItem.price;
+    const newPrice = (order.totalPrice + foodDrinkItem.price).toFixed(2);
     const update = await Order.findByIdAndUpdate(
       req.params.id,
       { $push: { orders: req.body.foodId }, $set: { totalPrice: newPrice } },
@@ -79,21 +79,36 @@ const updateOrderAddItem = async (req, res) => {
 
 const updateOrderDeleteItem = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("orders");
     const foodDrinkItem = await FoodDrink.findById(req.body.foodId);
-    const newPrice =
-      order.totalPrice > 0 ? order.totalPrice - foodDrinkItem.price : 0;
-    const update = await Order.findByIdAndUpdate(
+
+    // Calculate the new price
+    const newPrice = (
+      order.totalPrice > 0 ? order.totalPrice - foodDrinkItem.price : 0
+    ).toFixed(2);
+
+    // Find the index of the first occurrence of the item to be removed
+    const index = order.orders.findIndex((item) => item.id === req.body.foodId);
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Item not found in order" });
+    }
+
+    // Use $unset to remove the specific item by index
+    const unsetUpdate = {};
+    unsetUpdate[`orders.${index}`] = 1;
+
+    await Order.updateOne({ _id: order._id }, { $unset: unsetUpdate });
+
+    // Use $pull to remove null entries created by $unset
+    const finalUpdate = await Order.findByIdAndUpdate(
       req.params.id,
-      { $pull: { orders: req.body.foodId }, $set: { totalPrice: newPrice } },
+      { $pull: { orders: null }, $set: { totalPrice: newPrice } },
       { new: true, runValidators: true }
     )
       .populate("orders")
       .populate("user");
-    if (!update) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-    res.status(200).json(update);
+    res.status(200).json(finalUpdate);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
