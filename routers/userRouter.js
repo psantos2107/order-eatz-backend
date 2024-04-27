@@ -9,7 +9,7 @@ router.patch("/:id", authenticate, userCtrl.updateUserProfile); // Update user p
 router.get("/profile", authenticate, userCtrl.getUserProfile); // Allow users to see their own profile, private
 router.delete("/:id", authenticate, userCtrl.deleteUser); // Delete a user, private
 router.patch("/profilePhoto", authenticate, upload.single('photo'), userCtrl.updateProfilePhoto); // Update or upload a profile photo, private
-router.patch("/profile/update", authenticate, userCtrl.updateUserProfile); // Dedicated route for profile updates, private
+router.patch("/profile/update", authenticate, upload.single('photo'), userCtrl.updateUserProfile);
 router.get("/:id", userCtrl.getUserProfile); // Fetch user details, public
 module.exports = router;
 
