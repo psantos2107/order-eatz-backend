@@ -1,37 +1,35 @@
 const jwt = require("jsonwebtoken");
 
+// Middleware to authenticate requests based on JWT tokens
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const guestOrder = req.headers.guestorder || null;
-  //added the below to see if the request is for a guestOrder
+
+  // Allow guest orders to proceed without authentication
   if (guestOrder === "true") {
     return next();
-  } else {
-    if (!authHeader) {
-      return res
-        .status(403)
-        .json({ message: "Authorization header is missing" });
-    }
+  }
 
-    const token = authHeader.split(" ")[1];
+  // Check if authorization header is present
+  if (!authHeader) {
+    return res.status(403).json({ message: "Authorization header is missing" });
+  }
 
-    if (!token) {
-      console.log("No token found in the authorization header:", authHeader);
-      return res
-        .status(403)
-        .json({ message: "A token is required for authentication" });
-    }
+  // Extract token from authorization header
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    console.log("No token found in the authorization header:", authHeader);
+    return res.status(403).json({ message: "A token is required for authentication" });
+  }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded;
-      next();
-    } catch (err) {
-      console.error("Token verification failed:", err);
-      return res
-        .status(401)
-        .json({ message: "Invalid Token", error: err.message });
-    }
+  // Verify the token
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Attach decoded token to request
+    next();
+  } catch (err) {
+    console.error("Token verification failed:", err);
+    return res.status(401).json({ message: "Invalid Token", error: err.message });
   }
 };
 
