@@ -1,9 +1,8 @@
 const User = require("../models/user");
 
-// Get a single user profile
+// Fetch a single user profile by ID
 const getUserProfile = async (req, res) => {
   const userId = req.params.id || (req.user ? req.user.userId : null);
-
   if (!userId) {
     console.error("No user ID provided in the request");
     return res.status(400).json({ message: "User ID is required" });
@@ -16,7 +15,7 @@ const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Adjust photo path to be relative
+    // Ensure the photo path is relative for client-side use
     const userResponse = user.toObject();
     if (userResponse.photo) {
       userResponse.photo = `uploads/${userResponse.photo.split('uploads/')[1]}`;
@@ -29,25 +28,27 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-
-// Example of updating user profile in your backend controller
+// Update user profile details
 const updateUserProfile = async (req, res) => {
   const userId = req.user.userId;
-
   let updates = req.body;
+
+  // Handle file upload path
   if (req.file) {
     updates.photo = req.file.path;
   }
+
+  // Convert foodInterests from JSON string to array if necessary
   if (req.body.foodInterests && typeof req.body.foodInterests === 'string') {
     try {
-      req.body.foodInterests = JSON.parse(req.body.foodInterests);
+      updates.foodInterests = JSON.parse(req.body.foodInterests);
     } catch (e) {
       return res.status(400).json({ message: 'Invalid foodInterests format' });
     }
   }
 
   try {
-    const user = await User.findByIdAndUpdate(userId, updates, { new: true, select: '-password' });
+    const user = await User.findByIdAndUpdate(userId, updates, { new: true }).select('-password');
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -57,7 +58,7 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-
+// Delete a user
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -70,9 +71,9 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Update the profile photo for a user
 const updateProfilePhoto = async (req, res) => {
   const { id } = req.params;
-
   if (!req.file) {
     return res.status(400).json({ message: "No photo uploaded" });
   }
@@ -83,12 +84,9 @@ const updateProfilePhoto = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Use a more consistent way to handle path if necessary
-    const relativePath = `uploads/${req.file.filename}`;
-    user.photo = relativePath;
-
+    // Update photo path and save
+    user.photo = `uploads/${req.file.filename}`;
     await user.save();
-
     res.status(200).json({
       message: "Profile photo updated successfully",
       photo: user.photo,
@@ -101,9 +99,6 @@ const updateProfilePhoto = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -111,9 +106,3 @@ module.exports = {
   updateProfilePhoto,
 };
 
-
-//NOTES:
-/*
-  (1) Make sure getUser and updateUser does not return the user's password
-  (2) Make sure register returns a user object with the user's details like how the login part works (and not just userID)
-*/
